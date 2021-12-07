@@ -43,7 +43,7 @@ newtype Queued a = Queued (a, Double) deriving (Show)
 emptyQueue :: CustomerQueue
 emptyQueue = CustomerQueue (Empty, 0)
 
-data DeskStatus = EmptyDesk | Processing CustomerQueue | Finished (Queued Customer) CustomerQueue
+data DeskStatus a = EmptyDesk | Processing CustomerQueue | Finished a CustomerQueue
 
 processCustomers :: CustomerQueue -> [Customer] -> [Queued Customer]
 processCustomers (CustomerQueue (qs, started)) [] = case Seq.viewr qs of
@@ -54,15 +54,35 @@ processCustomers q (c:cs) = case deskStatus q (arriving c) of
   Processing (CustomerQueue (qs, started)) -> processCustomers (CustomerQueue (c <| qs, started)) cs
   Finished c' q' -> c':processCustomers q' (c:cs)
 
-deskStatus :: CustomerQueue -> Double -> DeskStatus
+deskStatus :: CustomerQueue -> Double -> DeskStatus (Queued Customer)
 deskStatus  q@(CustomerQueue (qs, started)) t = case Seq.viewr qs of
   EmptyR -> EmptyDesk
   seq :> cus -> if t < processing cus + started
     then Processing q
     else Finished (queued cus started) (CustomerQueue (seq, processing cus + started))
 
+processCustomersWith :: (CustomerQueue -> Customer -> a) -> CustomerQueue -> [Customer] -> [a]
+processCustomersWith f q@(CustomerQueue (qs, started)) [] = case Seq.viewr qs of
+  EmptyR -> []
+  seq :> cus -> f q cus:processCustomersWith f (CustomerQueue (seq, processing cus + started)) []
+processCustomersWith f q (c:cs) = case deskStatusWith f q (arriving c) of
+  EmptyDesk -> processCustomersWith f (CustomerQueue (c <| Empty, arriving c)) cs
+  Processing (CustomerQueue (qs, started)) -> processCustomersWith f (CustomerQueue (c <| qs, started)) cs
+  Finished c' q' -> c':processCustomersWith f q' (c:cs)
+
+deskStatusWith :: (CustomerQueue -> Customer -> a) -> CustomerQueue -> Double -> DeskStatus a
+deskStatusWith f q@(CustomerQueue (qs, started)) t = case Seq.viewr qs of
+  EmptyR -> EmptyDesk
+  seq :> cus -> if t < processing cus + started
+    then Processing q
+    else Finished (f q cus) (CustomerQueue (seq, processing cus + started))
+
+
 queued :: Customer -> Double -> Queued Customer
 queued cus started = Queued (cus, started - arriving cus)
+
+queued' :: CustomerQueue -> Customer -> Queued Customer
+queued' (CustomerQueue (_, started)) cus = Queued (cus, started - arriving cus)
 
 clist :: [Customer]
 clist = [Customer 0 100, Customer 10 50, Customer 50 500, Customer 120 20]
