@@ -85,3 +85,32 @@ queued' (CustomerQueue (_, started)) cus = Queued (cus, started - arriving cus)
 
 clist :: [Customer]
 clist = [Customer 0 100, Customer 10 50, Customer 50 500, Customer 120 20]
+
+data EventType = NewInQueue Customer | Processed (Queued Customer) deriving (Show)
+
+data Event = Event { event :: EventType, at :: Double, status :: CustomerQueue } deriving (Show)
+
+newInQueue :: CustomerQueue -> Customer -> Event
+newInQueue q cus = Event { event = NewInQueue cus, at = arriving cus, status = q}
+
+processed :: CustomerQueue -> Customer -> Event
+processed q@(CustomerQueue (_, started)) cus = Event
+  { event = Processed (queued cus started)
+  , at = started + processing cus
+  , status = q}
+
+processingEvents :: CustomerQueue -> [Customer] -> [Event]
+processingEvents q@(CustomerQueue (qs, started)) [] = case Seq.viewr qs of
+  EmptyR -> []
+  seq :> cus -> processed q cus:processingEvents (CustomerQueue (seq, processing cus + started)) []
+processingEvents q (c:cs) = case status q (arriving c) of
+  EmptyDesk -> newInQueue q c:processingEvents (CustomerQueue (c <| Empty, arriving c)) cs
+  Processing (CustomerQueue (qs, started)) -> newInQueue q c:processingEvents (CustomerQueue (c <| qs, started)) cs
+  Finished c' q' -> processed q c':processingEvents q' (c:cs)
+  where
+    status :: CustomerQueue -> Double -> DeskStatus Customer
+    status q@(CustomerQueue (qs, started)) t = case Seq.viewr qs of
+      EmptyR -> EmptyDesk
+      seq :> cus -> if t < processing cus + started
+        then Processing q
+        else Finished cus (CustomerQueue (seq, processing cus + started))
