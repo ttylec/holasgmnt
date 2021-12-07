@@ -15,13 +15,12 @@ newtype Arriving = Arriving (CustomerType, Double)
 data Customer = Customer {
     arriving :: Double
   , processing :: Double
-  -- , ctype :: CustomerType
   } deriving Show
 
 processingTime :: CustomerType -> RVar Double
-processingTime Yellow = beta 2 5
-processingTime Red = beta 2 2
-processingTime Blue = beta 5 1
+processingTime Yellow = (*200) <$> beta 2 5
+processingTime Red = (*200) <$> beta 2 2
+processingTime Blue = (*200) <$> beta 5 1
 
 customerStream :: CustomerType -> Double -> RVar [Customer]
 customerStream c end = loop 0
