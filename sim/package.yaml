@@ -1,0 +1,36 @@
+name:                hol-sandbox
+version:             0.1.0.0
+
+description:         Please see the README
+
+default-extensions:
+  - OverloadedStrings
+  - FlexibleInstances
+  - ScopedTypeVariables
+  - FlexibleContexts
+
+ghc-options:
+  - -optP-Wno-nonportable-include-path
+  - -W
+
+dependencies:
+- base >= 4.7 && < 5
+- bytestring
+- mtl
+- text
+- foldl
+- containers
+- vector
+- extra
+- mwc-random
+- random-fu
+- aeson
+- formatting
+- timeit
+- statistics
+- time
+- unordered-containers
+- monad-par
+
+library:
+  source-dirs: .
