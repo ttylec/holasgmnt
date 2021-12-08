@@ -6,6 +6,9 @@ import Data.Random.Distribution.Exponential (exponential)
 import Data.Random.Distribution.Beta (beta)
 import Data.Sequence ( Seq (Empty), (<|), ViewR ((:>), EmptyR) )
 import qualified Data.Sequence as Seq
+import Data.List (sort, unfoldr)
+import Data.List (sortBy)
+import Data.Ord (comparing)
 
 
 data CustomerType = Yellow | Red | Blue deriving (Show)
@@ -17,10 +20,23 @@ data Customer = Customer {
   , processing :: Double
   } deriving Show
 
+-- processingTime :: CustomerType -> RVar Double
+-- processingTime Yellow = (\x -> x*200*0.03333) <$> beta 2 5
+-- processingTime Red = (\x -> x*200*0.16) <$> beta 2 2
+-- processingTime Blue = (\x -> x*200*0.2) <$> beta 5 1
+
 processingTime :: CustomerType -> RVar Double
 processingTime Yellow = (*200) <$> beta 2 5
 processingTime Red = (*200) <$> beta 2 2
 processingTime Blue = (*200) <$> beta 5 1
+
+-- processingTime :: CustomerType -> RVar Double
+-- processingTime Yellow = betaF 2 5 <$> uniform 0 1
+-- processingTime Red = betaF 2 2 <$> uniform 0 1
+-- processingTime Blue = betaF 5 1 <$> uniform 0 1
+
+betaF :: Floating a => a -> a -> a -> a
+betaF alpha beta x = 200 * x**(alpha-1) * (1-x)**(beta-1)
 
 customerStream :: CustomerType -> Double -> RVar [Customer]
 customerStream c end = loop 0
@@ -28,7 +44,7 @@ customerStream c end = loop 0
     loop t0
       | t0 > end = pure []
       | otherwise = do
-          dt <- exponential 200
+          dt <- exponential 100
           p <- processingTime c
           let t = t0+dt
           rest <- loop t
@@ -83,8 +99,8 @@ queued cus started = Queued (cus, started - arriving cus)
 queued' :: CustomerQueue -> Customer -> Queued Customer
 queued' (CustomerQueue (_, started)) cus = Queued (cus, started - arriving cus)
 
-clist :: [Customer]
-clist = [Customer 0 100, Customer 10 50, Customer 50 500, Customer 120 20]
+-- clist :: [Customer]
+-- clist = [Customer 0 100, Customer 10 50, Customer 50 500, Customer 120 20]
 
 data EventType = NewInQueue Customer | Processed (Queued Customer) deriving (Show)
 
@@ -114,3 +130,17 @@ processingEvents q (c:cs) = case status q (arriving c) of
       seq :> cus -> if t < processing cus + started
         then Processing q
         else Finished cus (CustomerQueue (seq, processing cus + started))
+
+
+
+processingEvents' :: [Customer] -> [(Double, EventType)]
+processingEvents' cs = sortBy (comparing fst) (arr <> processed)
+  where
+    arr = fmap (\c -> (arriving c, NewInQueue c)) cs
+    processed = unfoldr process (0, cs)
+    process (_, []) = Nothing
+    process (last, c:cs) =
+      let event =  (finished, Processed $ queued c started)
+          started = max last (arriving c)
+          finished = started + processing c
+      in Just (event, (finished, cs))
