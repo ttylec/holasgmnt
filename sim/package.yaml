@@ -19,6 +19,7 @@ dependencies:
 - mtl
 - text
 - foldl
+- monad-loops
 - containers
 - vector
 - extra
@@ -34,3 +35,10 @@ dependencies:
 
 library:
   source-dirs: .
+
+executables:
+  solution:
+    main: solution.hs
+    ghc-options:
+      - -O1
+      - -rtsopts
