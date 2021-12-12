@@ -20,11 +20,13 @@ body {
 .card {
     border-radius: 15px;
     box-shadow: none;
+    color: #868686;
 }
 
 .card-content .card-title {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 1em;
 }
 
 .dropdown {
@@ -36,7 +38,16 @@ body {
     box-shadow: 0px 5px 6px rgba(0,0,0,0.3);
     z-index: 10;
 
-    padding: 0.5em;
+    padding: 0.5em 0.1em 0.5em 1em;
+}
+
+.dropdown .checkbox {
+    margin-top: 1ex;
+    margin-bottom: 1ex;
+}
+
+.dropdown input {
+    margin-right: 1ex;
 }
 
 .section {
@@ -64,6 +75,7 @@ h5 {
     font-weight: 500;
     text-transform: uppercase;
     font-size: 120%;
+    color: #313131;
 }
 
 h2 {

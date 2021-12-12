@@ -18,6 +18,8 @@ import Html.Attributes exposing (class)
 import Html exposing (h5)
 import Html exposing (h2)
 import Html exposing (button)
+import Html exposing (label)
+import List exposing (length)
 
 type alias Model = {
     overall : CardModel String
@@ -52,9 +54,19 @@ view model = div [ class "container is-max-desktop main" ] [
   , div [ class "section" ] [
       h2 [] [ text "Breakdown" ]
     , div [] [ text "Select the options from the dropdown menu" ]
-    , viewCard Category1 (\x -> x) (mkOpts 13) model.category1
-    , viewCard Category2 (\x -> x) (mkOpts 9) model.category2
-    , viewCard Category3 (\x -> x) (mkOpts 12) model.category3
+    , div [ class "columns" ] [
+        div [ class "column", class "is-full" ] [
+          viewCard Category1 (\x -> x) (mkOpts 13) model.category1
+        ]
+      ]
+    , div [ class "columns" ] [
+        div [ class "column", class "is-half" ] [
+          viewCard Category2 (\x -> x) (mkOpts 9) model.category2
+        ]
+      , div [ class "column", class "is-half" ] [
+          viewCard Category3 (\x -> x) (mkOpts 12) model.category3
+        ]
+      ]
     ]
   ]
 
@@ -68,7 +80,7 @@ viewCard section show opts model = div [ class "card" ] [
         , if model.visible then viewDropdown section show opts model.selection else text ""
         ]
       ]
-    , div [] [text "Selection: ", selected show model]
+    , if length model.selection > 0 then div [] [text "Selected: ", selected show model] else text ""
     ]
   ]
 
@@ -89,8 +101,10 @@ viewDropdown section show opts selection =
 
 checkbox : Section -> (a -> String) -> List a -> a -> Html (Msg a)
 checkbox section show selection o = div [] [
-    input [type_ "checkbox", onCheck (toggle section o), checked (member o selection)] [],
-    span [] [text <| show o]
+    label [ class "checkbox" ] [
+        input [ class "option-checkbox", type_ "checkbox", onCheck (toggle section o), checked (member o selection)] []
+      , text (show o)
+      ]
   ]
 
 toggle : Section -> a -> Bool -> Msg a
