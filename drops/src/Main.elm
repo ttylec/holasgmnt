@@ -1,26 +1,12 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, input)
+import Html exposing (Html, div, input, h5, h2, button, label, node, text)
 import Html.Events exposing (onClick, onCheck, on)
-import Html.Attributes exposing (type_)
-import Html exposing (text)
-import List exposing (map)
-import Html exposing (span)
-import List exposing (intersperse, member)
+import Html.Attributes exposing (checked, class, type_)
+import List exposing (map, filter, length, intersperse, member)
 import String exposing (concat)
-import List exposing (filter)
-import Html exposing (node)
 import Json.Decode as Decode
-import Html.Attributes exposing (id)
-import Html.Attributes exposing (checked)
-import Html.Attributes exposing (class)
-import Html exposing (h5)
-import Html exposing (h2)
-import Html exposing (button)
-import Html exposing (label)
-import List exposing (length)
-import Html.Attributes exposing (style)
 
 type alias Model = {
     overall : CardModel String
