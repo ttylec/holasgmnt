@@ -2,6 +2,8 @@
 
 body {
     background-color: #EFF1F6;
+    font-family: Futura;
+    font-size: 14px;
 }
 
 .main {
@@ -12,9 +14,6 @@ body {
 
 .overall {
     box-shadow: 0px 3px 3px  rgba(0,0,0,0.3);
-    -moz-box-shadow: 0px 3px 3px  rgba(0,0,0,0.3);
-    -webkit-box-shadow: 0px 3px 3px  rgba(0,0,0,0.3);
-    -o-box-shadow: 0px 3px 3px  rgba(0,0,0,0.3);
     border-radius: 15px;
 }
 
@@ -23,12 +22,48 @@ body {
     box-shadow: none;
 }
 
+.card-content .card-title {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dropdown {
+    position: absolute;
+    right: 20px;
+    width: 20ex;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0px 5px 6px rgba(0,0,0,0.3);
+    z-index: 10;
+
+    padding: 0.5em;
+}
+
 .section {
     padding: 10px;
 }
 
+.btn {
+    display: block;
+    font-size: 80%;
+    font-weight: 500;
+    border: none;
+    border-radius: 20px;
+    background-color: #E1E4EC;
+    color: #343537;
+    padding: 6px 12px 6px 12px ;
+    cursor: pointer;
+}
+
+.btn.toggled {
+    background-color: #1D2C58;
+    color: white;
+}
+
 h5 {
-    font-weight: bold;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 120%;
 }
 
 h2 {

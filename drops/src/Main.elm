@@ -17,6 +17,7 @@ import Html.Attributes exposing (checked)
 import Html.Attributes exposing (class)
 import Html exposing (h5)
 import Html exposing (h2)
+import Html exposing (button)
 
 type alias Model = {
     overall : CardModel String
@@ -60,9 +61,13 @@ view model = div [ class "container is-max-desktop main" ] [
 viewCard : Section -> (a -> String) -> List a -> CardModel a -> Html (Msg a)
 viewCard section show opts model = div [ class "card" ] [
     div [ class "card-content" ] [
-      h5 [] [text <| title section]
-    , div [ onClick (toggleDropdown model.visible section) ] [ text "Compare" ]
-    , if model.visible then viewDropdown section show opts model.selection else text ""
+      div [ class "card-title" ] [
+        h5 [] [text <| title section]
+      , div [] [
+          button [ class "btn", class (toggled model.visible), onClick (toggleDropdown model.visible section) ] [ text "COMPARE ▾" ]
+        , if model.visible then viewDropdown section show opts model.selection else text ""
+        ]
+      ]
     , div [] [text "Selection: ", selected show model]
     ]
   ]
@@ -73,6 +78,7 @@ title section = case section of
   Category2 -> "Category 2"
   Category3 -> "Category 3"
 
+toggled visible = if visible then "toggled" else ""
 toggleDropdown visible section = if visible then Hide section else Show section
 
 viewDropdown : Section -> (a -> String) -> List a -> List a -> Html (Msg a)
