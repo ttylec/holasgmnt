@@ -20,6 +20,7 @@ import Html exposing (h2)
 import Html exposing (button)
 import Html exposing (label)
 import List exposing (length)
+import Html.Attributes exposing (style)
 
 type alias Model = {
     overall : CardModel String
@@ -52,8 +53,10 @@ view model = div [ class "container is-max-desktop main" ] [
       viewCard Overall (\x -> x) (mkOpts 10) model.overall
     ]
   , div [ class "section" ] [
-      h2 [] [ text "Breakdown" ]
-    , div [] [ text "Select the options from the dropdown menu" ]
+      div [ class "section-title" ] [
+        h2 [] [ text "Breakdown" ]
+      , div [] [ text "Select the options from the dropdown menu" ]
+      ]
     , div [ class "columns" ] [
         div [ class "column", class "is-full" ] [
           viewCard Category1 (\x -> x) (mkOpts 13) model.category1
