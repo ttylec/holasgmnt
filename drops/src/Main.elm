@@ -27,43 +27,61 @@ type alias CardModel a = {
   , visible : Bool
   }
 
-init opts = { selection = opts, visible = False }
+mkOpts n = map (\i -> "Option " ++ String.fromInt i) <| List.range 1 n
 
-type Msg a = Select a | Deselect a | Show | Hide
+init : Model
+init =
+  let empty = { selection = [], visible = False }
+  in { overall = empty, category1 = empty, category2 = empty, category3 = empty }
 
-options = ["Option 1", "Option 2", "Option 3"]
-
-main = Browser.sandbox { init = init [], view = viewCard (\x -> x) options, update = update}
-
+type Section = Overall | Category1 | Category2 | Category3
+type Msg a = Select Section a | Deselect Section a | Show Section | Hide Section
 
 
-viewCard : (a -> String) -> List a -> CardModel a -> Html (Msg a)
-viewCard show opts model = div [] [
-    div [ onClick Show ] [ text "Compare" ],
-    if model.visible then viewDropdown show opts model.selection else text "",
+main = Browser.sandbox { init = init, view = view, update = update}
+
+view : Model -> Html (Msg String)
+view model = div [] [
+    viewCard Overall (\x -> x) (mkOpts 10) model.overall
+  , viewCard Category1 (\x -> x) (mkOpts 13) model.category1
+  , viewCard Category2 (\x -> x) (mkOpts 9) model.category2
+  , viewCard Category3 (\x -> x) (mkOpts 12) model.category3
+  ]
+
+viewCard : Section -> (a -> String) -> List a -> CardModel a -> Html (Msg a)
+viewCard section show opts model = div [] [
+    div [ onClick (Show section) ] [ text "Compare" ],
+    if model.visible then viewDropdown section show opts model.selection else text "",
     div [] [text "Selection: ", selected show model]
   ]
 
-viewDropdown : (a -> String) -> List a -> List a -> Html (Msg a)
-viewDropdown show opts selection =
+viewDropdown : Section -> (a -> String) -> List a -> List a -> Html (Msg a)
+viewDropdown section show opts selection =
   node "on-click-outside"
-    [ id "dropdown", on "clickoutside" (Decode.succeed Hide) ]
-    [ div []  <| map (checkbox show selection) opts ]
+    [ id "dropdown", on "clickoutside" (Decode.succeed (Hide section)) ]
+    [ div []  <| map (checkbox section show selection) opts ]
 
-checkbox : (a -> String) -> List a -> a -> Html (Msg a)
-checkbox show selection o = div [] [
-    input [type_ "checkbox", onCheck (toggle o), checked (member o selection)] [],
+checkbox : Section -> (a -> String) -> List a -> a -> Html (Msg a)
+checkbox section show selection o = div [] [
+    input [type_ "checkbox", onCheck (toggle section o), checked (member o selection)] [],
     span [] [text <| show o]
   ]
 
-toggle : a -> Bool -> Msg a
-toggle o c = if c then Select o else Deselect o
+toggle : Section -> a -> Bool -> Msg a
+toggle section o c = if c then Select section o else Deselect section o
 
 selected show model = text <| concat <| intersperse ", " (map show <| model.selection)
 
-update : Msg a -> CardModel a -> CardModel a
+update : Msg String -> Model -> Model
 update msg model = case msg of
-   (Select a) ->  { model | selection=a::model.selection}
-   (Deselect a) -> { model | selection=filter (\b -> b /= a) model.selection }
-   Show -> { model | visible = True }
-   Hide -> { model | visible = False }
+   (Select s a) -> mapSection s (\m -> { m | selection=a::m.selection}) model
+   (Deselect s a) -> mapSection s (\m -> { m | selection=filter (\b -> b /= a) m.selection }) model
+   Show s -> mapSection s (\m -> { m | visible = True }) model
+   Hide s -> mapSection s (\m -> { m | visible = False }) model
+
+mapSection : Section -> (CardModel String -> CardModel String) -> Model -> Model
+mapSection section f model = case section of
+  Overall -> { model | overall=f model.overall}
+  Category1 -> { model | category1=f model.category1}
+  Category2 -> { model | category2=f model.category2}
+  Category3 -> { model | category3=f model.category3}
