@@ -28,3 +28,5 @@ the `sim` directory.
 ## Elm assignment
 
 TBA
+
+Solution for the click-outside taken from https://discourse.elm-lang.org/t/clicking-outside-a-dialog-modal-to-close/3735/5
