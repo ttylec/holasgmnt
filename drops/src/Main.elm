@@ -15,6 +15,8 @@ import Json.Decode as Decode
 import Html.Attributes exposing (id)
 import Html.Attributes exposing (checked)
 import Html.Attributes exposing (class)
+import Html exposing (h5)
+import Html exposing (h2)
 
 type alias Model = {
     overall : CardModel String
@@ -42,19 +44,34 @@ type Msg a = Select Section a | Deselect Section a | Show Section | Hide Section
 main = Browser.sandbox { init = init, view = view, update = update}
 
 view : Model -> Html (Msg String)
-view model = div [] [
-    viewCard Overall (\x -> x) (mkOpts 10) model.overall
-  , viewCard Category1 (\x -> x) (mkOpts 13) model.category1
-  , viewCard Category2 (\x -> x) (mkOpts 9) model.category2
-  , viewCard Category3 (\x -> x) (mkOpts 12) model.category3
+view model = div [ class "container is-max-desktop main" ] [
+    div [ class "overall" ] [
+      viewCard Overall (\x -> x) (mkOpts 10) model.overall
+    ]
+  , div [ class "section" ] [
+      h2 [] [ text "Breakdown" ]
+    , div [] [ text "Select the options from the dropdown menu" ]
+    , viewCard Category1 (\x -> x) (mkOpts 13) model.category1
+    , viewCard Category2 (\x -> x) (mkOpts 9) model.category2
+    , viewCard Category3 (\x -> x) (mkOpts 12) model.category3
+    ]
   ]
 
 viewCard : Section -> (a -> String) -> List a -> CardModel a -> Html (Msg a)
-viewCard section show opts model = div [] [
-    div [ onClick (toggleDropdown model.visible section) ] [ text "Compare" ],
-    if model.visible then viewDropdown section show opts model.selection else text "",
-    div [] [text "Selection: ", selected show model]
+viewCard section show opts model = div [ class "card" ] [
+    div [ class "card-content" ] [
+      h5 [] [text <| title section]
+    , div [ onClick (toggleDropdown model.visible section) ] [ text "Compare" ]
+    , if model.visible then viewDropdown section show opts model.selection else text ""
+    , div [] [text "Selection: ", selected show model]
+    ]
   ]
+
+title section = case section of
+  Overall -> "Overall"
+  Category1 -> "Category 1"
+  Category2 -> "Category 2"
+  Category3 -> "Category 3"
 
 toggleDropdown visible section = if visible then Hide section else Show section
 

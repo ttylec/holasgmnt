@@ -4,6 +4,7 @@
     /* you can style your program here */
   </style>
   <script src="elm.js"></script>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <main></main>
@@ -18,11 +19,11 @@
         connectedCallback() {
           this.onMouseDown = e => {
             const elems = document.getElementsByClassName("dropdown")
-            console.log(elems)
             const isOutside = !Array.prototype.some.call(
               elems,
-              elem => { console.log(elem.contains(e.target)); elem.contains(e.target)}
+              elem => { console.log(elem.contains(e.target)); return elem.contains(e.target)}
             );
+            console.log("outside", isOutside)
 
             if (isOutside) {
               var event = new CustomEvent("clickoutside");

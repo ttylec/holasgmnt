@@ -1,0 +1,36 @@
+@import "https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css";
+
+body {
+    background-color: #EFF1F6;
+}
+
+.main {
+    background-color: #E5E7EB;
+    border-radius: 15px;
+    padding: 3px;
+}
+
+.overall {
+    box-shadow: 0px 3px 3px  rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 3px 3px  rgba(0,0,0,0.3);
+    -webkit-box-shadow: 0px 3px 3px  rgba(0,0,0,0.3);
+    -o-box-shadow: 0px 3px 3px  rgba(0,0,0,0.3);
+    border-radius: 15px;
+}
+
+.card {
+    border-radius: 15px;
+    box-shadow: none;
+}
+
+.section {
+    padding: 10px;
+}
+
+h5 {
+    font-weight: bold;
+}
+
+h2 {
+    font-weight: bold;
+}
