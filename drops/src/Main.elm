@@ -14,6 +14,7 @@ import Html exposing (node)
 import Json.Decode as Decode
 import Html.Attributes exposing (id)
 import Html.Attributes exposing (checked)
+import Html.Attributes exposing (class)
 
 type alias Model = {
     overall : CardModel String
@@ -50,15 +51,17 @@ view model = div [] [
 
 viewCard : Section -> (a -> String) -> List a -> CardModel a -> Html (Msg a)
 viewCard section show opts model = div [] [
-    div [ onClick (Show section) ] [ text "Compare" ],
+    div [ onClick (toggleDropdown model.visible section) ] [ text "Compare" ],
     if model.visible then viewDropdown section show opts model.selection else text "",
     div [] [text "Selection: ", selected show model]
   ]
 
+toggleDropdown visible section = if visible then Hide section else Show section
+
 viewDropdown : Section -> (a -> String) -> List a -> List a -> Html (Msg a)
 viewDropdown section show opts selection =
   node "on-click-outside"
-    [ id "dropdown", on "clickoutside" (Decode.succeed (Hide section)) ]
+    [ class "dropdown", on "clickoutside" (Decode.succeed (Hide section)) ]
     [ div []  <| map (checkbox section show selection) opts ]
 
 checkbox : Section -> (a -> String) -> List a -> a -> Html (Msg a)
