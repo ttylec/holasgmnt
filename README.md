@@ -28,8 +28,22 @@ the `sim` directory.
 ## Elm assignment
 
 Design seems to use Futura font which is not freely available (only on MacOS). Moreover,
-weights suggest that it may be commercial variant.
+weights suggest that it may be commercial variant (seems to be more I can get from system one).
 
-TBA
+Styles do not correspond idealy to specification, but it should be straighforward
+to adjust them.
 
 Solution for the click-outside taken from https://discourse.elm-lang.org/t/clicking-outside-a-dialog-modal-to-close/3735/5
+
+Code requires some refactoring to improve readability.
+
+### Building
+
+```console
+cd drops
+elm make src/Main.elm --output elm.js
+```
+
+### Viewing
+
+Just open `drops/index.html`.
